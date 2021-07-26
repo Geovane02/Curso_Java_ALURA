@@ -1,6 +1,10 @@
 package br.com.alura.servidor;
 
+import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Scanner;
+
+import javax.management.RuntimeErrorException;
 
 public class DistribuirTarefas implements Runnable{
 
@@ -12,12 +16,41 @@ public class DistribuirTarefas implements Runnable{
 
 	@Override
 	public void run() {
-		System.out.println("Distribuido tarefas para "+ socket);
 		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Distribuido tarefas para "+ socket);
+			Scanner entradaCliente=new Scanner(socket.getInputStream());
+			PrintStream saidaCliente = new PrintStream(socket.getOutputStream());
+			while (entradaCliente.hasNextLine()) {
+				String comando = entradaCliente.nextLine();
+				System.out.println("Comando recebido "+comando);
+				switch (comando) {
+				case "c1": {
+					saidaCliente.println("Confirmação comando C1");
+					break;
+				}
+				case "c2": {
+					saidaCliente.println("Confirmação comando C2");
+					break;
+				}
+				case "c3": {
+					saidaCliente.println("Confirmação comando C3");
+					break;
+				}					
+
+				default:
+					saidaCliente.println("Comando não encontrado");
+					break;
+				}
+			
+				System.out.println(comando);
+			
+			//Thread.sleep(20000);
+			}
+			saidaCliente.close();
+			entradaCliente.close();
+		} catch (Exception e) {
+			//e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
